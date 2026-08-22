@@ -32,9 +32,8 @@ def _get_gmail_service():
 
     return build("gmail", "v1", credentials=credentials)
 
-
-@shared_task
-def enviar_email(email_id):
+@shared_task(bind=True, max_retries=3, default_retry_delay=30)
+def enviar_email(self, email_id):
     try:
         registro = EmailEnviado.objects.get(id=email_id)
     except EmailEnviado.DoesNotExist:
@@ -59,6 +58,11 @@ def enviar_email(email_id):
         registro.save()
 
     except Exception as e:
-        registro.estado = EmailEnviado.Estado.FALLIDO
         registro.error_mensaje = str(e)
         registro.save()
+
+        try:
+            raise self.retry(exc=e)
+        except self.MaxRetriesExceededError:
+            registro.estado = EmailEnviado.Estado.FALLIDO
+            registro.save()
