@@ -1,8 +1,12 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect,render
 from django.http import HttpResponse
 from googleapiclient.discovery import build
 from .google_auth import get_flow
 from .models import GoogleCredential
+from .forms import EnvioMasivoForm
+from .models import EmailEnviado
+from .tasks import enviar_email
+
 
 
 def login_view(request):
@@ -45,3 +49,29 @@ def oauth2callback_view(request):
     )
 
     return HttpResponse(f"Autenticado como {email}. Credenciales guardadas correctamente.")
+
+
+
+def enviar_view(request):
+    if request.method == "POST":
+        form = EnvioMasivoForm(request.POST)
+        if form.is_valid():
+            destinatarios_raw = form.cleaned_data["destinatarios"]
+            asunto = form.cleaned_data["asunto"]
+            cuerpo = form.cleaned_data["cuerpo"]
+
+            destinatarios = [d.strip() for d in destinatarios_raw.split(",") if d.strip()]
+
+            for destinatario in destinatarios:
+                registro = EmailEnviado.objects.create(
+                    destinatario=destinatario,
+                    asunto=asunto,
+                    cuerpo=cuerpo,
+                )
+                enviar_email.delay(registro.id)
+
+            return render(request, "emails/enviado.html", {"cantidad": len(destinatarios)})
+    else:
+        form = EnvioMasivoForm()
+
+    return render(request, "emails/enviar.html", {"form": form})
