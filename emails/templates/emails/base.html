@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Gmail Sender{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-950 min-h-screen text-stone-200">
+    <nav class="border-b border-stone-800">
+        <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+            <span class="font-semibold text-stone-100 flex items-center gap-2">
+                <span class="h-2 w-2 rounded-full bg-amber-500"></span> Gmail Sender
+            </span>
+            <div class="flex gap-6 text-sm">
+                <a href="{% url 'enviar' %}" class="text-stone-400 hover:text-amber-400 transition">Enviar</a>
+                <a href="{% url 'historial' %}" class="text-stone-400 hover:text-amber-400 transition">Historial</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-6 py-10">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

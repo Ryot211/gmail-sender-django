@@ -75,3 +75,7 @@ def enviar_view(request):
         form = EnvioMasivoForm()
 
     return render(request, "emails/enviar.html", {"form": form})
+
+def historial_view(request):
+    envios = EmailEnviado.objects.all()
+    return render(request, "emails/historial.html", {"envios": envios})

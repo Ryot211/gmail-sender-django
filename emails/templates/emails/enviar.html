@@ -1,12 +1,31 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Enviar correos</title></head>
-<body>
-    <h1>Enviar correos</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Enviar</button>
-    </form>
-</body>
-</html>
+{% extends "emails/base.html" %}
+{% block title %}Enviar correos{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-semibold text-stone-100 mb-1">Enviar correos</h1>
+<p class="text-stone-500 mb-6">Envía a uno o varios destinatarios a la vez.</p>
+
+<form method="post" class="bg-stone-900 border border-stone-800 rounded-lg p-6 space-y-5">
+    {% csrf_token %}
+
+    <div>
+        <label class="block text-sm font-medium text-stone-300 mb-1">Destinatarios</label>
+        {{ form.destinatarios }}
+        <p class="text-xs text-stone-500 mt-1">{{ form.destinatarios.help_text }}</p>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-stone-300 mb-1">Asunto</label>
+        {{ form.asunto }}
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-stone-300 mb-1">Mensaje</label>
+        {{ form.cuerpo }}
+    </div>
+
+    <button type="submit" class="w-full bg-amber-600 text-stone-950 font-medium py-2.5 rounded-md hover:bg-amber-500 transition">
+        Enviar
+    </button>
+</form>
+{% endblock %}

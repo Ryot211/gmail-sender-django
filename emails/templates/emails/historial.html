@@ -1,0 +1,53 @@
+{% extends "emails/base.html" %}
+{% block title %}Historial{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-semibold text-stone-100">Historial de envíos</h1>
+        <p class="text-stone-500">{{ envios|length }} registro(s) en total.</p>
+    </div>
+    <a href="{% url 'enviar' %}" class="bg-amber-600 text-stone-950 text-sm font-medium px-4 py-2 rounded-md hover:bg-amber-500 transition">
+        + Nuevo envío
+    </a>
+</div>
+
+<div class="bg-stone-900 border border-stone-800 rounded-lg overflow-hidden">
+    <table class="w-full text-sm">
+        <thead class="border-b border-stone-800">
+            <tr>
+                <th class="text-left px-4 py-3 font-medium text-stone-400">Destinatario</th>
+                <th class="text-left px-4 py-3 font-medium text-stone-400">Asunto</th>
+                <th class="text-left px-4 py-3 font-medium text-stone-400">Estado</th>
+                <th class="text-left px-4 py-3 font-medium text-stone-400">Fecha</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-800">
+            {% for envio in envios %}
+            <tr class="hover:bg-stone-800/50 transition">
+                <td class="px-4 py-3 text-stone-200">{{ envio.destinatario }}</td>
+                <td class="px-4 py-3 text-stone-400">{{ envio.asunto }}</td>
+                <td class="px-4 py-3">
+                    {% if envio.estado == "enviado" %}
+                        <span class="inline-flex items-center gap-1.5 bg-emerald-950 text-emerald-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Enviado
+                        </span>
+                    {% elif envio.estado == "fallido" %}
+                        <span class="inline-flex items-center gap-1.5 bg-red-950 text-red-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                            <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Fallido
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1.5 bg-amber-950 text-amber-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Pendiente
+                        </span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-stone-500">{{ envio.creado_en|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="px-4 py-8 text-center text-stone-600">Aún no hay envíos registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

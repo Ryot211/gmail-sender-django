@@ -1,8 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Enviado</title></head>
-<body>
-    <h1>¡Listo!</h1>
-    <p>{{ cantidad }} correo(s) encolado(s) para envío. Revisa la terminal del worker de Celery para ver el progreso.</p>
-</body>
-</html>
+{% extends "emails/base.html" %}
+{% block title %}Enviado{% endblock %}
+
+{% block content %}
+<div class="bg-stone-900 border border-stone-800 rounded-lg p-8 text-center">
+    <div class="text-5xl mb-4">✅</div>
+    <h1 class="text-xl font-semibold text-stone-100 mb-2">¡Listo!</h1>
+    <p class="text-stone-500 mb-6">{{ cantidad }} correo(s) encolado(s) para envío.</p>
+    <a href="{% url 'historial' %}" class="inline-block bg-amber-600 text-stone-950 font-medium px-5 py-2 rounded-md hover:bg-amber-500 transition">
+        Ver historial
+    </a>
+</div>
+{% endblock %}
