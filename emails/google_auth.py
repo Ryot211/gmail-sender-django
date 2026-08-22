@@ -2,7 +2,10 @@ import os
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 from google_auth_oauthlib.flow import Flow
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.send",
+          "https://www.googleapis.com/auth/userinfo.email",
+          "openid",
+          ]
 
 def get_flow():
     return Flow.from_client_config(

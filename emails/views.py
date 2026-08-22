@@ -1,6 +1,8 @@
 from django.shortcuts import redirect
 from django.http import HttpResponse
+from googleapiclient.discovery import build
 from .google_auth import get_flow
+from .models import GoogleCredential
 
 
 def login_view(request):
@@ -16,7 +18,6 @@ def login_view(request):
 
 
 def oauth2callback_view(request):
-    state = request.session.get("state")
     code_verifier = request.session.get("code_verifier")
 
     flow = get_flow()
@@ -24,13 +25,23 @@ def oauth2callback_view(request):
     flow.fetch_token(authorization_response=request.build_absolute_uri())
 
     credentials = flow.credentials
-    request.session["credentials"] = {
-        "token": credentials.token,
-        "refresh_token": credentials.refresh_token,
-        "token_uri": credentials.token_uri,
-        "client_id": credentials.client_id,
-        "client_secret": credentials.client_secret,
-        "scopes": credentials.scopes,
-    }
 
-    return HttpResponse("Autenticado con Gmail correctamente. Ya puedes cerrar esta pestaña o volver a la app.")
+    # Obtenemos el email del usuario autenticado
+    oauth2_service = build("oauth2", "v2", credentials=credentials)
+    user_info = oauth2_service.userinfo().get().execute()
+    email = user_info["email"]
+
+    # Guardamos (o actualizamos) las credenciales en la base de datos
+    GoogleCredential.objects.update_or_create(
+        email=email,
+        defaults={
+            "token": credentials.token,
+            "refresh_token": credentials.refresh_token,
+            "token_uri": credentials.token_uri,
+            "client_id": credentials.client_id,
+            "client_secret": credentials.client_secret,
+            "scopes": ",".join(credentials.scopes),
+        },
+    )
+
+    return HttpResponse(f"Autenticado como {email}. Credenciales guardadas correctamente.")

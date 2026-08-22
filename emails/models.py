@@ -24,3 +24,18 @@ class EmailEnviado(models.Model):
 
     class Meta:
         ordering = ["-creado_en"]
+
+
+class GoogleCredential(models.Model):
+    email = models.EmailField(unique=True)
+    token = models.TextField()
+    refresh_token = models.TextField()
+    token_uri = models.CharField(max_length=255)
+    client_id = models.CharField(max_length=255)
+    client_secret = models.CharField(max_length=255)
+    scopes = models.TextField()
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.email
